@@ -1,0 +1,45 @@
+mutation{
+     addMusician(firstName: "Jimmy", lastName: "Page", instruments: ["Guitar"], dob: "1944-1-9" ){
+         firstName
+         lastName
+         dob
+         instruments
+         _id
+     }
+ }
+
+
+ mutation{
+   updateMusician(id:"5c2c2cb07c3f549c4d8a4d29", instruments: ["Electric Guitar", "Acoustic Guitar""wah-wah pedal"]){
+     _id
+     firstName
+     lastName
+     instruments
+     dob
+   }
+ }
+
+
+ mutation{
+   addBand(name: "Beatles", genre: "Rock"){
+     name
+     genre
+   	_id
+   }
+ }
+
+ {
+   bands{
+     name
+     genre
+     members{
+ 			_id
+       musician {
+         _id
+         firstName
+         lastName
+         dob
+         instruments
+       }
+     }
+   }

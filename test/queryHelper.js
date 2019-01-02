@@ -31,7 +31,7 @@ describe('Query Helper : ', () => {
 
             })
             .catch(err => {
-                console.error(err)
+                console.error(err);
                 done(err)
             })
     });
