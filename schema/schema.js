@@ -90,21 +90,21 @@ const AlbumType = new GraphQLObjectType({
         _id: { type: GraphQLID },
         title: { type: GraphQLString },
         songs: {
-            type: SongType,
+            type: GraphQLList(SongType),
             resolve(parent, args) {
-                return Song.find({ album: {id: parent.id }});
+                return Song.find({ _id: { $in: parent.songIds } });
             }
         },
         band:{
             type: BandType,
             resolve(parent, args) {
-                return Band.find({ id: args.bandId });
+                return Band.findById(parent.bandId );
             }
         },
         musician: {
             type: MusicianType,
             resolve(parent, args) {
-                return Musician.find({ id: args.musicianId });
+                return Musician.findById(parent.musicianId );
             }
         }
     })
@@ -123,13 +123,13 @@ const RootQuery = new GraphQLObjectType({
         musicians: {
             type: new GraphQLList(MusicianType),
             resolve(parent, args){
-                return Musician.find({});
+                return Musician.find({}).limit(30).sort('lastName');;
             }
         },
         bands: {
             type: new GraphQLList(BandType),
             resolve(parent, args){
-                return Band.find({});
+                return Band.find({}).limit(30).sort('name');
             }
         },
         band: {
@@ -137,6 +137,25 @@ const RootQuery = new GraphQLObjectType({
             args: { id: { type: GraphQLID } },
             resolve(parent, args){
                 return Band.findById(args.id);
+            }
+        },
+        songs: {
+            type: new GraphQLList(SongType),
+            resolve(parent, args){
+                return Song.find({}).limit(30).sort('title');
+            }
+        },
+        song: {
+            type: SongType,
+            args: { id: { type: GraphQLID } },
+            resolve(parent, args){
+                return Song.findById(args.id);
+            }
+        },
+        albums: {
+            type: new GraphQLList(AlbumType),
+            resolve(parent, args){
+                return Album.find({}).limit(30).sort('name');
             }
         },
     }
@@ -234,6 +253,60 @@ const Mutation = new GraphQLObjectType({
                     endDate: (args.endDate ? new Date(args.endDate) : null )
                 });
                 return bandMember.save();
+            }
+        },
+        addSong:{
+            type: SongType,
+            args: {
+                title: { type:  new GraphQLNonNull( GraphQLString ) },
+                runtime: { type: new GraphQLNonNull( GraphQLInt )},
+                albumIds: { type: new GraphQLList(GraphQLString) }
+
+            },
+            resolve(parent, args){
+                const song = new Song({
+                    title: args.title,
+                    runtime: args.runtime,
+                    albumIds: args.albumIds
+                });
+                return song.save();
+            }
+        },
+        updateSong: {
+            type: SongType,
+            args: {
+                id: {type:new GraphQLNonNull( GraphQLID) },
+                title: { type:  new GraphQLNonNull( GraphQLString ) },
+                runtime: { type: new GraphQLNonNull( GraphQLInt )},
+                albumIds: { type: new GraphQLList(GraphQLString) }
+            },
+            resolve(parent, args){
+                return Musician.findOneAndUpdate({_id: args.id}, {$set:{albumIds:args.albumIds, title:args.title, runtime:args.runtime }}, {new: true}, (err, doc) => {
+                    if (err) {
+                        console.log(err);
+                        throw err
+                    }
+
+                    return doc
+                });
+            }
+        },
+        addAlbum:{
+            type: AlbumType,
+            args: {
+                title: { type:  new GraphQLNonNull( GraphQLString ) },
+                bandId: { type:  GraphQLString },
+                musicianId: { type:  GraphQLString },
+                songIds: { type: new GraphQLList(GraphQLString) }
+            },
+            resolve(parent, args){
+                const album = new Album({
+                    title: args.title,
+                    bandId: args.bandId,
+                    musicianId: args.musicianId,
+                    songIds: args.songIds
+                });
+                return album.save();
             }
         },
     }
