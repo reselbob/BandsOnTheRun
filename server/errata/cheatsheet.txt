@@ -4,14 +4,14 @@ mutation{
          lastName
          dob
          instruments
-         _id
+         id
      }
  }
 
 
  mutation{
    updateMusician(id:"5c2c2cb07c3f549c4d8a4d29", instruments: ["Electric Guitar", "Acoustic Guitar""wah-wah pedal"]){
-     _id
+     id
      firstName
      lastName
      instruments
@@ -24,7 +24,7 @@ mutation{
    addBand(name: "Beatles", genre: "Rock"){
      name
      genre
-   	_id
+   	id
    }
  }
 
@@ -33,9 +33,9 @@ mutation{
      name
      genre
      members{
- 			_id
+ 			id
        musician {
-         _id
+         id
          firstName
          lastName
          dob

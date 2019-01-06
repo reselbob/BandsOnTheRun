@@ -14,6 +14,7 @@ const {
     GraphQLList,
     GraphQLNonNull
 } = graphql;
+var GraphQLDate = require('graphql-date')
 
 const { ObjectId } = mongoose.Types;
 ObjectId.prototype.valueOf = function () {
@@ -23,7 +24,7 @@ ObjectId.prototype.valueOf = function () {
 const SongType = new GraphQLObjectType({
     name: 'Song',
     fields: ( ) => ({
-        _id: { type: GraphQLID },
+        id: { type: GraphQLID },
         title: { type: GraphQLString },
         runtime: { type: GraphQLInt },
         albums: {
@@ -38,10 +39,10 @@ const SongType = new GraphQLObjectType({
 const MusicianType = new GraphQLObjectType({
     name: 'Musician',
     fields: ( ) => ({
-        _id: { type: GraphQLID },
+        id: { type: GraphQLID },
         firstName: { type: GraphQLString },
         lastName: { type: GraphQLString },
-        dob: { type: GraphQLString },
+        dob: { type: GraphQLDate },
         instruments: { type: new GraphQLList(GraphQLString) }
     })
 });
@@ -49,7 +50,7 @@ const MusicianType = new GraphQLObjectType({
 const BandMemberType = new GraphQLObjectType({
     name: 'BandMember',
     fields: ( ) => ({
-        _id: { type: GraphQLID },
+        id: { type: GraphQLID },
         bandId: { type: GraphQLID },
         musicianId: { type: GraphQLID },
         band: {
@@ -64,21 +65,21 @@ const BandMemberType = new GraphQLObjectType({
                 return Musician.findById(parent.musicianId);
             }
         },
-        startDate: { type: GraphQLString },
-        endDate: { type: GraphQLString }
+        startDate: { type: GraphQLDate },
+        endDate: { type: GraphQLDate }
     })
 });
 
 const BandType = new GraphQLObjectType({
     name: 'Band',
     fields: ( ) => ({
-        _id: { type: GraphQLID },
+        id: { type: GraphQLID },
         name: { type: GraphQLString },
         genre: { type: GraphQLString },
         members: {
             type: GraphQLList(BandMemberType),
             resolve(parent, args) {
-                return BandMember.find({ bandId: parent._id })
+                return BandMember.find({ bandId: parent.id })
             }
         }
     })
@@ -87,12 +88,13 @@ const BandType = new GraphQLObjectType({
 const AlbumType = new GraphQLObjectType({
     name: 'Album',
     fields: ( ) => ({
-        _id: { type: GraphQLID },
+        id: { type: GraphQLID },
         title: { type: GraphQLString },
+        releaseDate: {type: GraphQLDate},
         songs: {
             type: GraphQLList(SongType),
             resolve(parent, args) {
-                return Song.find({ _id: { $in: parent.songIds } });
+                return Song.find({ id: { $in: parent.songIds } });
             }
         },
         band:{
@@ -193,7 +195,7 @@ const Mutation = new GraphQLObjectType({
                 instruments: { type: new GraphQLList(GraphQLString) }
             },
             resolve(parent, args){
-                return Musician.findOneAndUpdate({_id: args.id}, {$set:{instruments:args.instruments}}, {new: true}, (err, doc) => {
+                return Musician.findOneAndUpdate({id: args.id}, {$set:{instruments:args.instruments}}, {new: true}, (err, doc) => {
                     if (err) {
                         console.log(err);
                         throw err
@@ -227,7 +229,7 @@ const Mutation = new GraphQLObjectType({
                 memberIds: { type: new GraphQLList(GraphQLString) }
             },
             resolve(parent, args){
-                return Musician.findOneAndUpdate({_id: args.id}, {$set:{memberIds:args.memberIds}}, {new: true}, (err, doc) => {
+                return Musician.findOneAndUpdate({id: args.id}, {$set:{memberIds:args.memberIds}}, {new: true}, (err, doc) => {
                     if (err) {
                         console.log(err);
                         throw err
@@ -281,7 +283,7 @@ const Mutation = new GraphQLObjectType({
                 albumIds: { type: new GraphQLList(GraphQLString) }
             },
             resolve(parent, args){
-                return Musician.findOneAndUpdate({_id: args.id}, {$set:{albumIds:args.albumIds, title:args.title, runtime:args.runtime }}, {new: true}, (err, doc) => {
+                return Musician.findOneAndUpdate({id: args.id}, {$set:{albumIds:args.albumIds, title:args.title, runtime:args.runtime }}, {new: true}, (err, doc) => {
                     if (err) {
                         console.log(err);
                         throw err

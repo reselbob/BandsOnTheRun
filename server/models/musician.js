@@ -1,7 +1,6 @@
 
 const mongoose = require('mongoose');
 const musicianSchema = new mongoose.Schema({
-    id: String,
     firstName: String,
     lastName: String,
     dob: Date,

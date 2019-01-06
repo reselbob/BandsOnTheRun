@@ -12,6 +12,7 @@ const getAuthorsQuery = gql`
 const getMusiciansQuery = gql`
     {
         musicians {
+            id
             firstName
             lastName
             dob
@@ -100,12 +101,14 @@ const getBookQuery = gql`
 `;
 
 const getMusicianQuery = gql`
-    musician(_id: $id) {
-        _id
-        firstName
-        lasName
-        dob
-        instruments
+    query GetMusician($id: ID){
+        musician(id: $id) {
+            id
+            firstName
+            lastName
+            dob
+            instruments
+        }
     }
 `;
 

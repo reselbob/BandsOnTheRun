@@ -1,42 +1,42 @@
 import React, { Component } from 'react';
 import { graphql } from 'react-apollo';
-import { getBookQuery } from '../queries/queries';
+import { getMusicianQuery } from '../queries/queries';
 
-class BookDetails extends Component {
-    displayBookDetails(){
-        const { book } = this.props.data;
-        if(book){
+class MusicianDetails extends Component {
+    displayMusicianDetails(){
+        const { musician } = this.props.data;
+        if(musician){
+            var cdate = (new Date(musician.dob)).toLocaleDateString();
             return(
                 <div>
-                    <h2>{ book.name }</h2>
-                    <p>{ book.genre }</p>
-                    <p>{ book.author.name }</p>
-                    <p>All books by this author:</p>
-                    <ul className="other-books">
-                        { book.author.books.map(item => {
-                            return <li key={item.id}>{ item.name }</li>
+                    <h2>{ musician.firstName } { musician.lastName }</h2>
+                    <p>{ cdate }</p>
+                    <p>Instruments:</p>
+                    <ul className="instruments">
+                        { musician.instruments.map(item => {
+                            return <li key={item}>{ item }</li>
                         })}
                     </ul>
                 </div>
             );
         } else {
-            return( <div>No book selected...</div> );
+            return( <div>No musician selected...</div> );
         }
     }
     render(){
         return(
-            <div id="book-details">
-                { this.displayBookDetails() }
+            <div id="musician-details">
+                { this.displayMusicianDetails() }
             </div>
         );
     }
 }
 
-export default graphql(getMusiciansQuery, {
+export default graphql(getMusicianQuery, {
     options: (props) => {
         return {
             variables: {
-                id: props.bookId
+                id: props.musicianId
             }
         }
     }

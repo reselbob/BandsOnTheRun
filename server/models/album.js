@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const albumSchema = new mongoose.Schema({
-    id: String,
     title: String,
     releaseDate: Date,
     bandId: String,
