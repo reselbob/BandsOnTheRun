@@ -1,10 +1,4 @@
 const graphql = require('graphql');
-const Musician = require('../models/musician');
-const BandMember = require('../models/bandMember');
-const Band = require('../models/band');
-const Song = require('../models/song');
-const Album = require('../models/album');
-const mongoose = require('mongoose');
 const {
     GraphQLObjectType,
     GraphQLString,
@@ -14,7 +8,16 @@ const {
     GraphQLList,
     GraphQLNonNull
 } = graphql;
-var GraphQLDate = require('graphql-date')
+const GraphQLDate = require('graphql-date');
+const socket = require('../socket');
+const Musician = require('../models/musician');
+const BandMember = require('../models/bandMember');
+const Band = require('../models/band');
+const Song = require('../models/song');
+const Album = require('../models/album');
+const mongoose = require('mongoose');
+const Subscription = require('../subscriptions');
+
 
 const { ObjectId } = mongoose.Types;
 ObjectId.prototype.valueOf = function () {
@@ -125,7 +128,7 @@ const RootQuery = new GraphQLObjectType({
         musicians: {
             type: new GraphQLList(MusicianType),
             resolve(parent, args){
-                return Musician.find({}).limit(30).sort('lastName');;
+                return Musician.find({}).limit(30).sort('lastName');
             }
         },
         bands: {
@@ -311,11 +314,73 @@ const Mutation = new GraphQLObjectType({
                 return album.save();
             }
         },
+        updateAlbum:{
+            type: AlbumType,
+            args: {
+                id: {type: new GraphQLNonNull( GraphQLID )  },
+                title: { type:  new GraphQLNonNull( GraphQLString ) },
+                bandId: { type:  GraphQLString },
+                musicianId: { type:  GraphQLString },
+                songIds: { type: new GraphQLList(GraphQLString) }
+            },
+            resolve(parent, args){
+                return Musician.findOneAndUpdate({id: args.id},
+                    {$set:{ title:args.title,
+                            bandId:args.bandId,
+                            musicianId:args.musicianId,
+                            songIds:args.songIds}}, {new: true},
+                    (err, doc) => {
+                    if (err) {
+                        console.log(err);
+                        throw err
+                    }
+                    return doc
+                });
+            }
+        },
     }
 });
 
+const Event = new GraphQLObjectType({
+    name: 'Event',
+    fields: () => ({
+        id: {
+            type: GraphQLID
+        },
+        name: {
+            type: GraphQLString
+        },
+        date: {
+            type: GraphQLString
+        },
+        payload : {
+            type: GraphQLString
+        }
+    })
+});
+/*
+const Subscription =  new GraphQLObjectType({
+    name: 'Subscription',
+    fields: () => ({
+        id: {
+            type: GraphQLID
+        },
+        name: {
+            type: GraphQLString
+        },
+        date: {
+            type: GraphQLString
+        },
+        payload : {
+            type: GraphQLString
+        }
+    }),
+    subscribe: () => socket.asyncIterator('EVENT_CREATED')
+});
+*/
 
 module.exports = new GraphQLSchema({
     query: RootQuery,
-    mutation: Mutation
+    mutation: Mutation,
+    subscription: Subscription
 });

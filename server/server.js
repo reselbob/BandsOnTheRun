@@ -1,7 +1,11 @@
+const { createServer } = require('http');
+const bodyParser = require('body-parser');
 const express = require('express');
-const graphqlHTTP = require('express-graphql');
+//const graphqlHTTP = require('express-graphql');
+const { graphqlExpress, graphiqlExpress } = require('graphql-server-express');
 const schema = require('./schema/schema');
-//const mongoose = require('mongoose');
+const { SubscriptionServer } = require('subscriptions-transport-ws');
+const { subscribe, execute } = require('graphql');
 const cors = require('cors');
 let database;
 const app = express();
@@ -9,20 +13,57 @@ const app = express();
 // allow cross-origin requests
 app.use(cors());
 database = require("./database/database");
+const PORT = process.env.PORT || 4000;
 
-// connect to mlab database
-// make sure to replace my db string & creds with your own
-//mongoose.connect('mongodb://ninja:test@ds161148.mlab.com:61148/graphql-ninja')
-//mongoose.connection.once('open', () => {
-    //console.log('conneted to database');
-//});
+app.use(bodyParser.json());
 
+
+/*
 // bind express with graphql
 app.use('/graphql', graphqlHTTP({
     schema,
     graphiql: true
 }));
+*/
 
-app.listen(4000, () => {
-    console.log('now listening for requests on port 4000');
+app.use(
+    '/graphql',
+    graphqlExpress({
+        context: {},
+        schema
+    })
+);
+
+app.use(
+    '/graphiql',
+    graphiqlExpress({
+        endpointURL: '/graphql',
+        subscriptionsEndpoint: `ws://localhost:${PORT}/subscriptions`
+    })
+);
+
+/*
+app.listen(PORT, () => {
+    console.log(`now listening for requests on port ${PORT}`);
+});*/
+
+const server = createServer(app);
+
+server.listen(PORT, err => {
+    if (err) throw err;
+
+    new SubscriptionServer(
+        {
+            schema,
+            execute,
+            subscribe,
+            onConnect: () => console.log('Client connected')
+        },
+        {
+            server,
+            path: '/subscriptions'
+        }
+    );
+
+    console.log(`> Ready on PORT ${PORT}`);
 });

@@ -41,6 +41,7 @@ const getAlbumsQuery = gql`
 const getSongsQuery = gql`
     {
         songs {
+            id
             title
             runtime
         }

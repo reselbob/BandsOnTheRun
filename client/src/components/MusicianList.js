@@ -27,6 +27,7 @@ class MusicianList extends Component{
     render(){
         return(
             <div>
+                <div id="new-musician">Add Musician</div>
                 <ul id="musician-list">
                     { this.displayMusicians() }
                 </ul>
