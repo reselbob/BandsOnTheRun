@@ -1,5 +1,5 @@
 const socket = require('../socket');
-const EventType = require('../types/event');
+const {EventType} = require('../types/types');
 
 module.exports = {
     type: EventType,

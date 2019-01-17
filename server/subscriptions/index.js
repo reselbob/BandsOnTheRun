@@ -1,6 +1,5 @@
-
-const eventCreated = require('./eventCreated');
+const eventCreated = require('./eventCreated')
 
 module.exports = {
     eventCreated
-};
+}

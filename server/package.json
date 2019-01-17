@@ -19,6 +19,6 @@
     "graphql-subscriptions": "^1.0.0",
     "mocha": "^5.2.0",
     "mongoose": "^5.4.1",
-    "subscriptions-transport-ws": "^0.9.15"
+    "subscriptions-transport-ws": "^0.8.3"
   }
 }

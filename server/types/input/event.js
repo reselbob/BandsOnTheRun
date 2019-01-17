@@ -8,6 +8,9 @@ module.exports = new GraphQLInputObjectType({
         },
         date: {
             type: GraphQLString
+        },
+        payload:{
+            type: GraphQLString
         }
     }
 });
