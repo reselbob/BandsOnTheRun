@@ -60,7 +60,7 @@ const RootQuery = new GraphQLObjectType({
         musicians: {
             type: new GraphQLList(MusicianType),
             resolve(parent, args){
-                return Musician.find({}).limit(30).sort('lastName');
+                return Musician.find({}).limit(30).sort('lastName')
             }
         },
         bands: {
