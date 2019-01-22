@@ -1,4 +1,5 @@
 const { ApolloServer, gql } = require('apollo-server');
+import { SubscriptionServer } from 'subscriptions-transport-ws';
 const schema = require('./schema/schema');
 
 const database = require("./database/database");

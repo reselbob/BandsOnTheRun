@@ -12,7 +12,7 @@ module.exports = gql`
     type Song {
         id: String
         title: String
-        # musicians describes the composer(s) of the song
+        #  musicians describes the composer(s) of the song
         musicians: [Musician]
         runtime: Int
         albums: [Album]
@@ -33,7 +33,9 @@ module.exports = gql`
         bandmembers: [BandMember]
     }
 
-    # Describes an album released by either a band or musician
+    """
+    Describes an album released by either a band or musician
+    """
     type Album {
         id: String
         title: String
@@ -79,10 +81,12 @@ module.exports = gql`
         addSong (title: String, runtime: Int, musicianIds: [String]): Song
         addAlbum (title: String, releaseDate: String, songIds: [String]): Album
         addEvent (name: String!, payload: String): Event
-        updateMusician(musicianId: String!, firstName: String!, lastName: String!, dob: String, instruments: [String] ): Musician
+        eventsByDateRange( startDate: String, endDate: String): [Event]
+        eventsByName( name: String!): [Event]
+        updateMusician(id: String!, firstName: String, lastName: String, dob: String, instruments: [String] ): Musician
         updateBandMember(bandmemberId : String!, bandId: String, musicianId : String, startDate : String, endDate: String): BandMember
         updateBand(bandId: String!, name: String, musicianIds: [String]): Band
-        updateSong (songId: String!, title: String, runtime: Int, musicianIds: [String]): Song
+        updateSong (id: String!, title: String, runtime: Int, musicianIds: [String]): Song
         updateAlbum (albumId: String!, title: String, releaseDate: String, songIds: [String]): Album
         testEvent(title: String, message: String): Event
     }
