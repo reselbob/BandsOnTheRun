@@ -8,6 +8,14 @@ mutation{
      }
  }
 
+  mutation{
+    addBandMember(bandId:"5c4386906c31f955391cf129",
+      musicianId: "5c4385bf19a20e5051ca06c4", startDate: "1965-12-22", endDate: "1967-08-01"){
+      band{
+        name
+      }
+    }
+  }
 
  mutation{
    updateMusician(id:"5c2c2cb07c3f549c4d8a4d29", instruments: ["Electric Guitar", "Acoustic Guitar""wah-wah pedal"]){
