@@ -1,6 +1,4 @@
-const { gql } = require('apollo-server');
-
-module.exports = gql`
+module.exports = `
     type Musician {
         id: String
         firstName: String
@@ -12,7 +10,7 @@ module.exports = gql`
     type Song {
         id: String
         title: String
-        #  musicians describes the composer(s) of the song
+        # musicians describes the composer(s) of the song
         musicians: [Musician]
         runtime: Int
         albums: [Album]
